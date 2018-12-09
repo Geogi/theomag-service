@@ -21,6 +21,17 @@ struct Payload {
 struct PayloadEquipment {
     key: String,
     capacity: Option<u64>,
+    #[serde(rename = "type")]
+    eq_type: PayloadEquipmentType,
+}
+
+#[derive(Deserialize)]
+enum PayloadEquipmentType {
+    OJN,
+    DP,
+    CP,
+    OE,
+    JU
 }
 
 #[derive(Deserialize)]
@@ -35,14 +46,20 @@ struct Response {
     errors: Vec<String>,
 }
 
+fn check_do(payload: Payload) -> Vec<String> {
+    vec![String::from("IL Y A UNE ERREUR!!!")]
+}
+
+fn has_correct_parent(eq: PayloadEquipment, all: Payload) -> bool {
+    true
+}
+
 fn check(req: &HttpRequest) -> Box<Future<Item=HttpResponse, Error=Error>> {
     req.json()
         .from_err()
-        .and_then(|payload: Payload| {
-            let dummy_response = Response {
-                errors: vec![format!("test: {} equipments, {} routes", payload.equipments.len(), payload.routes.len())]
-            };
-            Ok(HttpResponse::Ok().json(dummy_response))
+        .and_then(|p: Payload| {
+            let errors = Response { errors: check_do(p) };
+            Ok(HttpResponse::Ok().json(errors))
         })
         .responder()
 }
