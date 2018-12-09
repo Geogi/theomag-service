@@ -1,15 +1,8 @@
-extern crate serde;
-extern crate serde_json;
-#[macro_use]
-extern crate serde_derive;
-extern crate actix_web;
-extern crate env_logger;
-extern crate futures;
-
-use actix_web::{http, middleware, server, App, HttpResponse, HttpMessage, AsyncResponder};
+use actix_web::{App, AsyncResponder, http, HttpMessage, HttpResponse, middleware, server};
+use actix_web::Error;
 use actix_web::HttpRequest;
 use futures::Future;
-use actix_web::Error;
+use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 struct Payload {
@@ -46,11 +39,11 @@ struct Response {
     errors: Vec<String>,
 }
 
-fn check_do(payload: Payload) -> Vec<String> {
+fn check_do(_payload: Payload) -> Vec<String> {
     vec![String::from("IL Y A UNE ERREUR!!!")]
 }
 
-fn has_correct_parent(eq: PayloadEquipment, all: Payload) -> bool {
+fn has_correct_parent(_eq: PayloadEquipment, _all: Payload) -> bool {
     true
 }
 
