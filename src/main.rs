@@ -1,6 +1,6 @@
-use actix_web::{App, AsyncResponder, http, HttpMessage, HttpResponse, middleware, server};
 use actix_web::Error;
 use actix_web::HttpRequest;
+use actix_web::{http, middleware, server, App, AsyncResponder, HttpMessage, HttpResponse};
 use futures::Future;
 use serde_derive::{Deserialize, Serialize};
 
@@ -24,7 +24,7 @@ enum PayloadEquipmentType {
     DP,
     CP,
     OE,
-    JU
+    JU,
 }
 
 #[derive(Deserialize)]
@@ -47,11 +47,13 @@ fn has_correct_parent(_eq: PayloadEquipment, _all: Payload) -> bool {
     true
 }
 
-fn check(req: &HttpRequest) -> Box<Future<Item=HttpResponse, Error=Error>> {
+fn check(req: &HttpRequest) -> Box<Future<Item = HttpResponse, Error = Error>> {
     req.json()
         .from_err()
         .and_then(|p: Payload| {
-            let errors = Response { errors: check_do(p) };
+            let errors = Response {
+                errors: check_do(p),
+            };
             Ok(HttpResponse::Ok().json(errors))
         })
         .responder()
@@ -75,7 +77,7 @@ fn main() {
                     .register()
             })
     })
-        .bind("127.0.0.1:8000")
-        .expect("Can not bind to port 8000")
-        .run();
+    .bind("127.0.0.1:8000")
+    .expect("Can not bind to port 8000")
+    .run();
 }
